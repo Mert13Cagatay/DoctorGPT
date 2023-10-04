@@ -1,0 +1,186 @@
+import tkinter as tk
+from tkinter import messagebox
+from tkinter import font as tkfont
+from PIL import Image, ImageTk
+import openai  # Import the openai package
+from ttkthemes import ThemedTk
+
+# Your OpenAI GPT-3 API key
+api_key = "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"
+
+def login(event=None):
+    # Replace these with your actual login credentials
+    valid_username = "mert"
+    valid_password = "cagatay"
+
+    entered_username = username_entry.get()
+    entered_password = password_entry.get()
+
+    if entered_username == valid_username and entered_password == valid_password:
+        login_window.destroy()
+        main_window()
+    else:
+        messagebox.showerror("Login Error", "Invalid username or password")
+
+photo_image_list = []
+
+def main_window():
+    def ask_question(event=None):
+        question = question_text.get("1.0", "end-1c")  # Get the content of the Text widget
+
+        # Use the OpenAI API to send the question to ChatGPT
+        response = openai.Completion.create(
+            engine="davinci",  # You can try other engines like "curie" or "text-davinci-003"
+            prompt= "I want you to act as an AI assisted doctor. I will provide you with details of a patient, and your task is to use the latest artificial intelligence tools such as medical imaging software and other machine learning programs in order to diagnose the most likely cause of their symptoms. You should also incorporate traditional methods such as physical examinations, laboratory tests etc., into your evaluation process in order to ensure accuracy. And now here is the first question" +  question,
+            max_tokens=200,  # Adjust the max_tokens as needed
+            api_key=api_key
+        )
+
+        answer = response.choices[0].text.strip()
+
+        # Display the answer in the main window
+        answer_text.config(state=tk.NORMAL)
+        answer_text.delete("1.0", tk.END)
+        answer_text.insert(tk.END, answer)
+        answer_text.config(state=tk.DISABLED)
+
+    main_window = ThemedTk(theme="equilux")  # Choose a theme from ttkthemes
+    main_window.title("DoctorGPT")
+
+    # Set the window size to 1000x2000
+    main_window.geometry("1000x2000")
+    main_window.configure(bg="#2C8454")  # Set the background color to green (#2C8454)
+
+
+    
+    # Create a custom font for labels and buttons with "Arial" family
+    custom_font = tkfont.Font(family="Arial", size=24)
+
+    # Frame for the picture and title
+    frame = tk.Frame(main_window, bg="#2C8454")  # Set the frame background color to green (#2C8454)
+    frame.place(x=50, y=40, width=810, height=300)  # Adjust coordinates and dimensions
+    
+    # Background square
+    square_bg = tk.Label(frame, bg="lightgray")  # Set the background square color to light gray
+    square_bg.place(relwidth=2, relheight=2)  # Adjust relwidth and relheight as needed
+
+
+    # Title
+    title_label = tk.Label(frame, text="DoctorGPT", font=("Arial", 36, "bold"), bg="lightgray", fg="black")  # Set title color to black and make it bigger
+    title_label.pack(side=tk.TOP, pady=20)
+
+    # Additional Text
+    additional_text = tk.Label(frame, text="This artificial intelligence tool exists only to help you. It is in the hands of artificial intelligence whether its detections are correct. Only you can be sure that the solution to your question is correct. Note that different sources have different content and this AI tool may not be able to take it into account. Try to be very descriptive when asking your questions. Go step by step. If you think it's wrong, keep asking. But remember that you have the most correct answer. Good luck!",
+                                font=("Arial", 20), bg="lightgray", fg="black", justify=tk.LEFT, wraplength=800)  # Set the additional text size and wrap
+    additional_text.pack(side=tk.TOP, pady=10)
+
+    # Change question input field color, dimensions, and font
+    question_text = tk.Text(main_window, width=60, height=2, bg="lightgray", fg="black", wrap=tk.WORD, font=custom_font)  # Set the input field background color to light gray
+    question_text.place(x=50, y=450)  # Adjust x and y coordinates as needed
+
+    # Create a text widget to display the chatbot's responses
+    answer_text = tk.Text(main_window, width=60, height=5, bg="lightgray", fg="black", wrap=tk.WORD, font=custom_font)  # Set the answer text background color to light gray
+    answer_text.place(x=50, y=600)  # Adjust x and y coordinates as needed
+    answer_text.config(state=tk.DISABLED)  # Disable editing of the answer text
+
+    # Change "Ask" button color, shape, and font
+    ask_button = tk.Button(main_window, text="Ask", command=ask_question, bg="lightgray", fg="black", relief="raised", font=custom_font)  # Set the button background color to light gray
+    ask_button.place(x=450, y=550)  # Adjust x and y coordinates as needed
+
+    # Exit button
+    exit_button = tk.Button(main_window, text="Exit", command=main_window.destroy, bg="lightgray", fg="black", relief="raised", font=custom_font)  # Set the button background color to light gray
+    exit_button.place(x=950, y=10)  # Adjust x and y coordinates as needed
+
+    # Contact button
+    contact_button = tk.Button(main_window, text="Contact", command=open_contact_page, bg="lightgray", fg="black", relief="raised", font=custom_font)  # Set the button background color to light gray
+    contact_button.place(x=950, y=60)  # Adjust x and y coordinates as needed
+
+    main_window.mainloop()
+
+# Function to open the contact page
+def open_contact_page():
+    contact_window = ThemedTk(theme="equilux")
+    contact_window.title("Contact")
+    contact_window.geometry("800x600")
+    contact_window.configure(bg="#2C8454")  # Set the background color to green (#2C8454)
+
+    custom_font = tkfont.Font(family="Arial", size=24)
+
+    # Title
+    contact_title = tk.Label(contact_window, text="Contact", font=("Arial", 36, "bold"), bg="#2C8454", fg="lightgray")
+    contact_title.pack(pady=30)
+
+    # LinkedIn
+    linkedin_label = tk.Label(contact_window, text="LinkedIn:", font=("Arial", 24), bg="#2C8454", fg="lightgray")
+    linkedin_label.place(x=50, y=200, anchor="w")
+
+    linkedin_link = tk.Label(contact_window, text="Developer's LinkedIn", font=("Arial", 20, "underline"), bg="#2C8454", fg="blue", cursor="hand2")
+    linkedin_link.place(x=200, y=200, anchor="w")
+
+    def open_linkedin(event):
+        import webbrowser
+        webbrowser.open_new("https://www.linkedin.com/in/mert-%C3%A7a%C4%9Fatay-293b711b8/")
+
+    linkedin_link.bind("<Button-1>", open_linkedin)
+
+    # Mail
+    mail_label = tk.Label(contact_window, text="Mail:", font=("Arial", 24), bg="#2C8454", fg="lightgray")
+    mail_label.place(x=50, y=300, anchor="w")
+
+    mail_address = tk.Label(contact_window, text="mertcagatay4@gmail.com", font=("Arial", 20), bg="#2C8454", fg="lightgray")
+    mail_address.place(x=200, y=300, anchor="w")
+
+    # Return button
+    return_button = tk.Button(contact_window, text="Return to Main Page", command=contact_window.destroy, bg="lightgray", fg="black", relief="raised", font=custom_font)
+    return_button.place(x=300, y=450)
+
+    # Exit button
+    exit_button = tk.Button(contact_window, text="Exit", command=main_window.destroy, bg="lightgray", fg="black", relief="raised", font=custom_font)  # Set the button background color to light gray
+    exit_button.place(x=950, y=10)  # Adjust x and y coordinates as needed
+
+
+    contact_window.mainloop()
+
+# Create the login window
+login_window = ThemedTk(theme="equilux")  # Choose a theme from ttkthemes
+login_window.title("Login")
+
+# Set the login window size to 1000x2000
+login_window.geometry("1000x2000")
+login_window.configure(bg="#2C8454")  # Set the background color to green (#2C8454)
+
+login_bg_image = Image.open("proje1.png")  # Replace "proje1.png" with your image file
+login_bg_photo = ImageTk.PhotoImage(login_bg_image)
+
+# Create a Label to display the background image
+login_bg_label = tk.Label(login_window, image=login_bg_photo)
+login_bg_label.place(relwidth=1, relheight=1)
+
+# Create a custom font for labels, buttons, and entries with "Arial" family
+custom_font = tkfont.Font(family="Arial", size=24)
+
+# Change label color, font, and size
+username_label = tk.Label(login_window, text="Username:", bg="#2C8454", fg="black", font=custom_font)  # Set label background color to green (#2C8454)
+username_label.pack(pady=20)
+
+# Change entry shape, color, and font
+username_entry = tk.Entry(login_window, width=30, bg="lightgray", fg="black", relief="solid", font=custom_font)  # Set entry background color to light gray
+username_entry.pack(pady=10)
+username_entry.bind("<Return>", login)  # Bind Enter key to login function
+
+# Change label color, font, and size
+password_label = tk.Label(login_window, text="Password:", bg="#2C8454", fg="black", font=custom_font)  # Set label background color to green (#2C8454)
+password_label.pack(pady=10)
+
+# Change entry shape, color, and font
+password_entry = tk.Entry(login_window, width=30, show="*", bg="lightgray", fg="black", relief="solid", font=custom_font)  # Set entry background color to light gray
+password_entry.pack(pady=10)
+password_entry.bind("<Return>", login)  # Bind Enter key to login function
+
+# Change "Login" button color, shape, and font
+login_button = tk.Button(login_window, text="Login", command=login, bg="lightgray", fg="black", relief="raised", font=custom_font)  # Set the button background color to light gray
+login_button.pack(pady=20)
+
+photo_image_list.append(login_bg_photo)
+
+login_window.mainloop()
